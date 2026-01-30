@@ -1,4 +1,0 @@
-environments:
-  example-project:
-    description: "Пример окружения"
-    path: ~/projects/example
