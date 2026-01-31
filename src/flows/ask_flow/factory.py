@@ -22,9 +22,7 @@ from src.flows.ask_flow.presenters.execution_progress_presenter import (
 )
 from src.flows.ask_flow.protocols.i_pending_prompt_storage import IPendingPromptStorage
 from src.flows.ask_flow.services.prompt_executor import PromptExecutor
-from src.flows.project_selection_flow.protocols.i_project_selection_state_storage import (
-    IProjectSelectionStateStorage,
-)
+from src.shared.protocols import IProjectSelectionStateStorage
 
 
 class AskFlowFactory:

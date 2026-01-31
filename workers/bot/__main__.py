@@ -7,11 +7,9 @@ from dotenv import load_dotenv
 
 from src.flows.ask_flow import AskFlowFactory, RedisPendingPromptStorage
 from src.flows.execution_control_flow import ExecutionControlFlowFactory
-from src.flows.project_selection_flow import (
-    ProjectSelectionFlowFactory,
-    RedisProjectSelectionStateStorage,
-)
+from src.flows.project_selection_flow import ProjectSelectionFlowFactory
 from src.flows.welcome_flow import WelcomeMenuSender
+from src.shared import RedisMessageForReplaceStorage, RedisProjectSelectionStateStorage
 from workers.bot.repo_collection import RepoCollection
 
 logger = logging.getLogger(__name__)
@@ -48,14 +46,17 @@ def main() -> None:
     app.set_start_allowed_roles({"admin", "developer"})
 
     project_state_storage = RedisProjectSelectionStateStorage(redis_url)
+    message_for_replace_storage = RedisMessageForReplaceStorage(redis_url)
     pending_prompt_storage = RedisPendingPromptStorage(redis_url)
 
     project_selection_factory = ProjectSelectionFlowFactory(
         callback_answerer=app.callback_answerer,
         message_sender=app.message_sender,
+        message_replacer=app.message_replacer,
         phrase_repo=app.phrase_repo,
         project_repo=repos.project_repo,
         state_storage=project_state_storage,
+        message_for_replace_storage=message_for_replace_storage,
         user_repo=app.user_repo,
     )
     project_selection_factory.register_handlers(
@@ -108,6 +109,7 @@ def main() -> None:
         phrase_repo=app.phrase_repo,
         project_repo=repos.project_repo,
         state_storage=project_state_storage,
+        message_for_replace_storage=message_for_replace_storage,
         buttons=app._main_menu_sender.buttons,
     )
     app._start_command_handler.main_menu_sender = welcome_menu_sender

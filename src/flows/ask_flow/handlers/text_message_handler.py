@@ -7,9 +7,7 @@ from bot_framework.role_management.repos.protocols.i_user_repo import IUserRepo
 from src.bounded_context.project_management.repos.project_repo import ProjectRepo
 from src.flows.ask_flow.presenters.confirmation_presenter import ConfirmationPresenter
 from src.flows.ask_flow.protocols.i_pending_prompt_storage import IPendingPromptStorage
-from src.flows.project_selection_flow.protocols.i_project_selection_state_storage import (
-    IProjectSelectionStateStorage,
-)
+from src.shared.protocols import IProjectSelectionStateStorage
 
 
 class TextMessageHandler(IMessageHandler):

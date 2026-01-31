@@ -3,6 +3,7 @@ from bot_framework.protocols.i_callback_answerer import ICallbackAnswerer
 from bot_framework.protocols.i_callback_handler_registry import (
     ICallbackHandlerRegistry,
 )
+from bot_framework.protocols.i_message_replacer import IMessageReplacer
 from bot_framework.protocols.i_message_sender import IMessageSender
 from bot_framework.role_management.repos.protocols.i_user_repo import IUserRepo
 
@@ -16,9 +17,7 @@ from src.flows.project_selection_flow.handlers.project_select_handler import (
 from src.flows.project_selection_flow.presenters.project_list_presenter import (
     ProjectListPresenter,
 )
-from src.flows.project_selection_flow.protocols.i_project_selection_state_storage import (
-    IProjectSelectionStateStorage,
-)
+from src.shared.protocols import IMessageForReplaceStorage, IProjectSelectionStateStorage
 
 
 class ProjectSelectionFlowFactory:
@@ -26,16 +25,20 @@ class ProjectSelectionFlowFactory:
         self,
         callback_answerer: ICallbackAnswerer,
         message_sender: IMessageSender,
+        message_replacer: IMessageReplacer,
         phrase_repo: IPhraseRepo,
         project_repo: ProjectRepo,
         state_storage: IProjectSelectionStateStorage,
+        message_for_replace_storage: IMessageForReplaceStorage,
         user_repo: IUserRepo,
     ) -> None:
         self._callback_answerer = callback_answerer
         self._message_sender = message_sender
+        self._message_replacer = message_replacer
         self._phrase_repo = phrase_repo
         self._project_repo = project_repo
         self._state_storage = state_storage
+        self._message_for_replace_storage = message_for_replace_storage
         self._user_repo = user_repo
 
         self._project_select_handler: ProjectSelectHandler | None = None
@@ -46,9 +49,11 @@ class ProjectSelectionFlowFactory:
             self._project_select_handler = ProjectSelectHandler(
                 callback_answerer=self._callback_answerer,
                 message_sender=self._message_sender,
+                message_replacer=self._message_replacer,
                 phrase_repo=self._phrase_repo,
                 project_repo=self._project_repo,
                 state_storage=self._state_storage,
+                message_for_replace_storage=self._message_for_replace_storage,
                 user_repo=self._user_repo,
             )
         return self._project_select_handler
@@ -57,7 +62,9 @@ class ProjectSelectionFlowFactory:
         project_select_handler = self.get_project_select_handler()
         return ProjectListPresenter(
             message_sender=self._message_sender,
+            message_replacer=self._message_replacer,
             phrase_repo=self._phrase_repo,
+            message_for_replace_storage=self._message_for_replace_storage,
             project_select_handler_prefix=project_select_handler.prefix,
         )
 

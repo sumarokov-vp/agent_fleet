@@ -10,9 +10,7 @@ from bot_framework.role_management.repos.protocols.i_user_repo import IUserRepo
 from src.bounded_context.agent_control.services.agent_session_manager import (
     AgentSessionManager,
 )
-from src.flows.project_selection_flow.protocols.i_project_selection_state_storage import (
-    IProjectSelectionStateStorage,
-)
+from src.shared.protocols import IProjectSelectionStateStorage
 
 
 class StopCallbackHandler:

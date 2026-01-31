@@ -9,9 +9,7 @@ from src.bounded_context.agent_control.services.agent_session_manager import (
 )
 from src.bounded_context.project_management.repos.project_repo import ProjectRepo
 from src.flows.execution_control_flow.presenters.status_presenter import StatusPresenter
-from src.flows.project_selection_flow.protocols.i_project_selection_state_storage import (
-    IProjectSelectionStateStorage,
-)
+from src.shared.protocols import IProjectSelectionStateStorage
 
 
 class StatusCallbackHandler:

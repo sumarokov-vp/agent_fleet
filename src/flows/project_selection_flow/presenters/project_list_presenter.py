@@ -1,21 +1,28 @@
+from bot_framework.entities.bot_message import BotMessage
 from bot_framework.entities.button import Button
 from bot_framework.entities.keyboard import Keyboard
 from bot_framework.entities.user import User
 from bot_framework.language_management.repos.protocols.i_phrase_repo import IPhraseRepo
+from bot_framework.protocols.i_message_replacer import IMessageReplacer
 from bot_framework.protocols.i_message_sender import IMessageSender
 
 from src.bounded_context.project_management.entities.project import Project
+from src.shared.protocols import IMessageForReplaceStorage
 
 
 class ProjectListPresenter:
     def __init__(
         self,
         message_sender: IMessageSender,
+        message_replacer: IMessageReplacer,
         phrase_repo: IPhraseRepo,
+        message_for_replace_storage: IMessageForReplaceStorage,
         project_select_handler_prefix: str,
     ) -> None:
         self._message_sender = message_sender
+        self._message_replacer = message_replacer
         self._phrase_repo = phrase_repo
+        self._message_for_replace_storage = message_for_replace_storage
         self._project_select_handler_prefix = project_select_handler_prefix
 
     def present(self, user: User, projects: list[Project]) -> None:
@@ -24,7 +31,8 @@ class ProjectListPresenter:
                 key="projects.empty",
                 language_code=user.language_code,
             )
-            self._message_sender.send(chat_id=user.id, text=text)
+            bot_message = self._send_or_replace(user.id, text)
+            self._message_for_replace_storage.save(user.id, bot_message)
             return
 
         text = self._phrase_repo.get_phrase(
@@ -44,4 +52,21 @@ class ProjectListPresenter:
             )
 
         keyboard = Keyboard(rows=buttons)
-        self._message_sender.send(chat_id=user.id, text=text, keyboard=keyboard)
+        bot_message = self._send_or_replace(user.id, text, keyboard)
+        self._message_for_replace_storage.save(user.id, bot_message)
+
+    def _send_or_replace(
+        self,
+        chat_id: int,
+        text: str,
+        keyboard: Keyboard | None = None,
+    ) -> BotMessage:
+        stored_message = self._message_for_replace_storage.get(chat_id)
+        if stored_message:
+            return self._message_replacer.replace(
+                chat_id=chat_id,
+                message_id=stored_message.message_id,
+                text=text,
+                keyboard=keyboard,
+            )
+        return self._message_sender.send(chat_id=chat_id, text=text, keyboard=keyboard)

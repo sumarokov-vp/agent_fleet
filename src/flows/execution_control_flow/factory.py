@@ -17,9 +17,7 @@ from src.flows.execution_control_flow.handlers.stop_callback_handler import (
     StopCallbackHandler,
 )
 from src.flows.execution_control_flow.presenters.status_presenter import StatusPresenter
-from src.flows.project_selection_flow.protocols.i_project_selection_state_storage import (
-    IProjectSelectionStateStorage,
-)
+from src.shared.protocols import IProjectSelectionStateStorage
 
 
 class ExecutionControlFlowFactory:
