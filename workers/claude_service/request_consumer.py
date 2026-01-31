@@ -3,7 +3,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 import redis
-from claude_code_sdk import AssistantMessage, TextBlock, ToolUseBlock
+from claude_code_sdk import AssistantMessage, ResultMessage, TextBlock, ToolUseBlock
 
 from src.bounded_context.agent_control.services.agent_session_manager import (
     AgentSessionManager,
@@ -39,15 +39,15 @@ class ClaudeRequestConsumer(MessageConsumer[ClaudeRequest]):
     def _parse_message(self, body: bytes) -> ClaudeRequest:
         return ClaudeRequest.model_validate_json(body)
 
-    async def _handle_message(self, request: ClaudeRequest) -> None:
+    async def _handle_message(self, message: ClaudeRequest) -> None:
         logger.info(
             "Processing request %s for user %s (project: %s, mode: %s)",
-            request.request_id,
-            request.user_id,
-            request.project_id,
-            request.permission_mode,
+            message.request_id,
+            message.user_id,
+            message.project_id,
+            message.permission_mode,
         )
-        await self._execute_request(request)
+        await self._execute_request(message)
 
     async def _execute_request(self, request: ClaudeRequest) -> None:
         session = None
@@ -75,6 +75,8 @@ class ClaudeRequestConsumer(MessageConsumer[ClaudeRequest]):
             accumulated_text: list[str] = []
 
             async for msg in client.receive_messages():
+                if isinstance(msg, ResultMessage):
+                    break
                 if isinstance(msg, AssistantMessage):
                     for block in msg.content:
                         if isinstance(block, ToolUseBlock):
