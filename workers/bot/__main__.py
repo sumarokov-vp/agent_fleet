@@ -1,3 +1,4 @@
+import logging
 import os
 from pathlib import Path
 
@@ -12,8 +13,14 @@ from src.flows.project_selection_flow import (
 )
 from workers.bot.repo_collection import RepoCollection
 
+logger = logging.getLogger(__name__)
+
 
 def main() -> None:
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    )
     load_dotenv()
 
     bot_token = os.environ["BOT_TOKEN"]
@@ -94,6 +101,7 @@ def main() -> None:
         content_types=["text"],
     )
 
+    logger.info("Bot started")
     app.run()
 
 
