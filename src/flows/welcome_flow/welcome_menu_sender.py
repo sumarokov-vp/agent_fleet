@@ -59,12 +59,12 @@ class WelcomeMenuSender:
         if project_id:
             project = self._project_repo.get_by_id(project_id)
             if project:
-                return project.id
+                return project.description or project.id
 
         projects = self._project_repo.get_all()
         if projects:
             first_project = projects[0]
             self._state_storage.save_selected_project(user_id, first_project.id)
-            return first_project.id
+            return first_project.description or first_project.id
 
         return "—"
