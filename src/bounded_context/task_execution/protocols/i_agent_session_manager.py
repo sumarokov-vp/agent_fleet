@@ -1,0 +1,13 @@
+from typing import Protocol
+
+from src.bounded_context.task_execution.entities.execution_session import ExecutionSession
+
+
+class IAgentSessionManager(Protocol):
+    def create_session(self, project_id: str, working_directory: str) -> ExecutionSession: ...
+
+    def get_session(self, session_id: str) -> ExecutionSession | None: ...
+
+    def interrupt_session(self, session_id: str) -> bool: ...
+
+    def close_session(self, session_id: str) -> None: ...

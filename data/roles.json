@@ -1,0 +1,16 @@
+{
+  "roles": [
+    {
+      "name": "admin",
+      "description": "Full access to all projects and commands"
+    },
+    {
+      "name": "developer",
+      "description": "Can execute tasks and manage assigned projects"
+    },
+    {
+      "name": "viewer",
+      "description": "Read-only access to project status"
+    }
+  ]
+}

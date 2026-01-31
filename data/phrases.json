@@ -1,0 +1,106 @@
+{
+  "bot.start.welcome": {
+    "ru": "Добро пожаловать в Agent Fleet! Используйте /projects для выбора проекта.",
+    "en": "Welcome to Agent Fleet! Use /projects to select a project."
+  },
+  "bot.access_denied": {
+    "ru": "Доступ запрещён. Вы не в списке разрешённых пользователей.",
+    "en": "Access denied. You are not in the allowed users list."
+  },
+  "projects.title": {
+    "ru": "Доступные проекты:",
+    "en": "Available projects:"
+  },
+  "projects.empty": {
+    "ru": "Нет доступных проектов.",
+    "en": "No projects available."
+  },
+  "projects.selected": {
+    "ru": "Выбран проект: {project_name}",
+    "en": "Selected project: {project_name}"
+  },
+  "queue.title": {
+    "ru": "Очередь задач для {project_name}:",
+    "en": "Task queue for {project_name}:"
+  },
+  "queue.empty": {
+    "ru": "Нет задач в очереди.",
+    "en": "No tasks in queue."
+  },
+  "queue.task_item": {
+    "ru": "• {title} ({estimate}ч)",
+    "en": "• {title} ({estimate}h)"
+  },
+  "status.no_active": {
+    "ru": "Нет активных задач.",
+    "en": "No active tasks."
+  },
+  "status.current_task": {
+    "ru": "Текущая задача: {title}\nПроект: {project_name}\nПрогресс: {spent}/{estimate}ч",
+    "en": "Current task: {title}\nProject: {project_name}\nProgress: {spent}/{estimate}h"
+  },
+  "execution.started": {
+    "ru": "Начато выполнение задачи: {title}",
+    "en": "Started task execution: {title}"
+  },
+  "execution.paused": {
+    "ru": "Выполнение приостановлено.",
+    "en": "Execution paused."
+  },
+  "execution.resumed": {
+    "ru": "Выполнение возобновлено.",
+    "en": "Execution resumed."
+  },
+  "execution.stopped": {
+    "ru": "Выполнение остановлено.",
+    "en": "Execution stopped."
+  },
+  "execution.completed": {
+    "ru": "Задача завершена: {title}",
+    "en": "Task completed: {title}"
+  },
+  "execution.time_limit": {
+    "ru": "Превышен лимит времени (20% от оценки). Задача требует переоценки.",
+    "en": "Time limit exceeded (20% of estimate). Task requires re-estimation."
+  },
+  "ask.prompt_required": {
+    "ru": "Укажите запрос после команды /ask",
+    "en": "Specify prompt after /ask command"
+  },
+  "ask.project_not_selected": {
+    "ru": "Сначала выберите проект через /projects",
+    "en": "First select a project via /projects"
+  },
+  "ask.processing": {
+    "ru": "Обрабатываю запрос...",
+    "en": "Processing request..."
+  },
+  "lock.project_busy": {
+    "ru": "Проект занят другой задачей. Дождитесь завершения.",
+    "en": "Project is busy with another task. Wait for completion."
+  },
+  "estimation.title": {
+    "ru": "Оценка задачи: {title}",
+    "en": "Task estimation: {title}"
+  },
+  "estimation.auto_estimate": {
+    "ru": "Автоматическая оценка: {hours}ч",
+    "en": "Auto estimate: {hours}h"
+  },
+  "estimation.approve": {
+    "ru": "Утвердить",
+    "en": "Approve"
+  },
+  "estimation.adjust": {
+    "ru": "Скорректировать",
+    "en": "Adjust"
+  },
+  "button.start_task": {
+    "ru": "Начать выполнение",
+    "en": "Start execution"
+  },
+  "button.back": {
+    "ru": "Назад",
+    "en": "Back"
+  }
+}

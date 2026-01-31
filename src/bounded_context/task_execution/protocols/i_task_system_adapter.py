@@ -1,0 +1,16 @@
+from typing import Protocol
+
+from src.bounded_context.task_execution.entities.task import Task
+from src.bounded_context.task_execution.entities.task_status import TaskStatus
+
+
+class ITaskSystemAdapter(Protocol):
+    def get_ready_tasks(self, assignee: str) -> list[Task]: ...
+
+    def update_task_status(self, task_id: str, status: TaskStatus) -> None: ...
+
+    def add_comment(self, task_id: str, comment: str) -> None: ...
+
+    def get_task_estimate(self, task_id: str) -> float | None: ...
+
+    def set_task_estimate(self, task_id: str, hours: float) -> None: ...
