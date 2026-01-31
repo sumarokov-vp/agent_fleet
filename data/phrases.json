@@ -4,16 +4,16 @@
     "en": "Welcome to Agent Fleet!\n\nCurrent project: {project_name}"
   },
   "menu.projects": {
-    "ru": "📁 Проекты",
-    "en": "📁 Projects"
+    "ru": "▸ Проекты",
+    "en": "▸ Projects"
   },
   "menu.status": {
-    "ru": "📊 Статус",
-    "en": "📊 Status"
+    "ru": "◈ Статус",
+    "en": "◈ Status"
   },
   "menu.stop": {
-    "ru": "🛑 Стоп",
-    "en": "🛑 Stop"
+    "ru": "■ Стоп",
+    "en": "■ Stop"
   },
   "bot.access_denied": {
     "ru": "Доступ запрещён. Вы не в списке разрешённых пользователей.",
@@ -144,20 +144,20 @@
     "en": "You are about to send a prompt to project: {project_name}"
   },
   "ask.mode_default": {
-    "ru": "▶️ Default",
-    "en": "▶️ Default"
+    "ru": "► Default",
+    "en": "► Default"
   },
   "ask.mode_accept_edits": {
-    "ru": "✅ Accept Edits",
-    "en": "✅ Accept Edits"
+    "ru": "✓ Accept Edits",
+    "en": "✓ Accept Edits"
   },
   "ask.mode_plan": {
-    "ru": "📋 Plan",
-    "en": "📋 Plan"
+    "ru": "≡ Plan",
+    "en": "≡ Plan"
   },
   "ask.cancel_button": {
-    "ru": "❌ Отменить",
-    "en": "❌ Cancel"
+    "ru": "✕ Отменить",
+    "en": "✕ Cancel"
   },
   "ask.prompt_cancelled": {
     "ru": "Запрос отменён",
