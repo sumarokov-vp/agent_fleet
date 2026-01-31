@@ -131,6 +131,10 @@
     "ru": "Проект: {project_name}\nСтатус: выполняется",
     "en": "Project: {project_name}\nStatus: running"
   },
+  "status.selected_project": {
+    "ru": "Текущий проект: {project_name}",
+    "en": "Current project: {project_name}"
+  },
   "stop.session_interrupted": {
     "ru": "Сессия прервана",
     "en": "Session interrupted"
