@@ -3,7 +3,7 @@ services:
     build:
       context: ../..
       dockerfile: deploy/Dockerfile
-    platform: linux/arm64
+    platform: linux/amd64
     container_name: agent_fleet_claude_service
     command: python -m workers.claude_service
     env_file:
@@ -12,15 +12,13 @@ services:
     network_mode: host
     volumes:
       - ../..:/app
-      - /Users/vladimirsumarokov/dev/smartist/bot_framework:/Users/vladimirsumarokov/dev/smartist/bot_framework:ro
-      - /Users/vladimirsumarokov/dev:/Users/vladimirsumarokov/dev:ro
     restart: unless-stopped
 
   bot:
     build:
       context: ../..
       dockerfile: deploy/Dockerfile
-    platform: linux/arm64
+    platform: linux/amd64
     container_name: agent_fleet_bot
     command: python -m workers.bot
     env_file:
@@ -29,14 +27,13 @@ services:
     network_mode: host
     volumes:
       - ../..:/app
-      - /Users/vladimirsumarokov/dev/smartist/bot_framework:/Users/vladimirsumarokov/dev/smartist/bot_framework:ro
     restart: unless-stopped
 
   bot-consumer:
     build:
       context: ../..
       dockerfile: deploy/Dockerfile
-    platform: linux/arm64
+    platform: linux/amd64
     container_name: agent_fleet_bot_consumer
     command: python -m workers.bot_consumer
     env_file:
@@ -45,5 +42,4 @@ services:
     network_mode: host
     volumes:
       - ../..:/app
-      - /Users/vladimirsumarokov/dev/smartist/bot_framework:/Users/vladimirsumarokov/dev/smartist/bot_framework:ro
     restart: unless-stopped

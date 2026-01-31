@@ -1,4 +1,4 @@
-FROM --platform=linux/arm64 python:3.14-slim
+FROM python:3.14-slim
 
 WORKDIR /app
 
@@ -8,7 +8,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y nodejs \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && npm install -g @anthropic-ai/claude-code
 
 # Установка uv
 RUN pip install uv
