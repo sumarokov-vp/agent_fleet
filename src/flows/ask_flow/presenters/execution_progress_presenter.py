@@ -1,3 +1,5 @@
+import html
+
 from bot_framework.entities.bot_message import BotMessage
 from bot_framework.language_management.repos.protocols.i_phrase_repo import IPhraseRepo
 from bot_framework.protocols.i_message_service import IMessageService
@@ -28,9 +30,22 @@ class ExecutionProgressPresenter:
 
     def send_text(self, chat_id: int, text: str) -> None:
         if len(text) > self.MAX_TEXT_LENGTH:
-            text = text[: self.MAX_TEXT_LENGTH] + "..."
-        bot_message = self._send_or_replace(chat_id, text)
+            self._delete_stored_message(chat_id)
+            self._message_service.send_document(
+                chat_id=chat_id,
+                document=text.encode("utf-8"),
+                filename="response.md",
+            )
+            return
+        escaped_text = html.escape(text)
+        bot_message = self._send_or_replace(chat_id, escaped_text)
         self._message_for_replace_storage.save(chat_id, bot_message)
+
+    def _delete_stored_message(self, chat_id: int) -> None:
+        stored_message = self._message_for_replace_storage.get(chat_id)
+        if stored_message:
+            self._message_service.delete(chat_id, stored_message.message_id)
+            self._message_for_replace_storage.clear(chat_id)
 
     def send_completed(self, chat_id: int, language_code: str) -> None:
         text = self._phrase_repo.get_phrase(
