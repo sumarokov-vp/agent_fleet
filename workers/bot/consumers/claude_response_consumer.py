@@ -56,45 +56,45 @@ class ClaudeResponseConsumer(MessageConsumer[ClaudeResponse]):
     def _parse_message(self, body: bytes) -> ClaudeResponse:
         return ClaudeResponse.model_validate_json(body)
 
-    async def _handle_message(self, response: ClaudeResponse) -> None:
+    async def _handle_message(self, message: ClaudeResponse) -> None:
         logger.info(
             "Received response %s (type: %s) for user %s",
-            response.request_id,
-            response.response_type,
-            response.user_id,
+            message.request_id,
+            message.response_type,
+            message.user_id,
         )
 
-        match response.response_type:
+        match message.response_type:
             case "text":
-                if response.text:
+                if message.text:
                     self._progress_presenter.send_text(
-                        chat_id=response.user_id,
-                        text=response.text,
+                        chat_id=message.user_id,
+                        text=message.text,
                     )
             case "ask_question":
-                if response.questions and response.session_id:
+                if message.questions and message.session_id:
                     self._ask_question_presenter.send(
-                        chat_id=response.user_id,
-                        request_id=response.request_id,
-                        questions=response.questions,
-                        session_id=response.session_id,
+                        chat_id=message.user_id,
+                        request_id=message.request_id,
+                        questions=message.questions,
+                        session_id=message.session_id,
                     )
             case "plan_ready":
-                if response.session_id:
+                if message.session_id:
                     self._plan_ready_presenter.send(
-                        chat_id=response.user_id,
-                        request_id=response.request_id,
-                        plan_content=response.plan_content,
-                        accumulated_text=response.accumulated_text,
-                        session_id=response.session_id,
+                        chat_id=message.user_id,
+                        request_id=message.request_id,
+                        plan_content=message.plan_content,
+                        accumulated_text=message.accumulated_text,
+                        session_id=message.session_id,
                     )
             case "completed":
                 self._progress_presenter.send_completed(
-                    chat_id=response.user_id,
+                    chat_id=message.user_id,
                     language_code="ru",
                 )
             case "error":
                 self._progress_presenter.send_error(
-                    chat_id=response.user_id,
-                    error=response.error_message or "Unknown error",
+                    chat_id=message.user_id,
+                    error=message.error_message or "Unknown error",
                 )
