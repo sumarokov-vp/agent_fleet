@@ -3,7 +3,7 @@ from bot_framework.protocols.i_callback_answerer import ICallbackAnswerer
 from bot_framework.protocols.i_callback_handler_registry import (
     ICallbackHandlerRegistry,
 )
-from bot_framework.protocols.i_message_sender import IMessageSender
+from bot_framework.protocols.i_message_service import IMessageService
 from bot_framework.role_management.repos.protocols.i_user_repo import IUserRepo
 
 from src.bounded_context.agent_control.services.agent_session_manager import (
@@ -24,7 +24,7 @@ class ExecutionControlFlowFactory:
     def __init__(
         self,
         callback_answerer: ICallbackAnswerer,
-        message_sender: IMessageSender,
+        message_service: IMessageService,
         phrase_repo: IPhraseRepo,
         user_repo: IUserRepo,
         project_repo: ProjectRepo,
@@ -32,7 +32,7 @@ class ExecutionControlFlowFactory:
         session_manager: AgentSessionManager,
     ) -> None:
         self._callback_answerer = callback_answerer
-        self._message_sender = message_sender
+        self._message_service = message_service
         self._phrase_repo = phrase_repo
         self._user_repo = user_repo
         self._project_repo = project_repo
@@ -44,7 +44,7 @@ class ExecutionControlFlowFactory:
 
     def _create_status_presenter(self) -> StatusPresenter:
         return StatusPresenter(
-            message_sender=self._message_sender,
+            message_service=self._message_service,
             phrase_repo=self._phrase_repo,
         )
 
@@ -64,7 +64,7 @@ class ExecutionControlFlowFactory:
         if self._stop_callback_handler is None:
             self._stop_callback_handler = StopCallbackHandler(
                 callback_answerer=self._callback_answerer,
-                message_sender=self._message_sender,
+                message_service=self._message_service,
                 phrase_repo=self._phrase_repo,
                 user_repo=self._user_repo,
                 project_state_storage=self._project_state_storage,
