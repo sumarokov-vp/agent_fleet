@@ -37,7 +37,7 @@ class ProjectListPresenter:
             buttons.append(
                 [
                     Button(
-                        text=project.id,
+                        text=project.description or project.id,
                         callback_data=f"{self._project_select_handler_prefix}:{project.id}",
                     )
                 ]
