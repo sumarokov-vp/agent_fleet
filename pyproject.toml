@@ -5,7 +5,7 @@ description = "Remote development environment manager via Telegram"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
-    "bot-framework[all]==0.2.0",
+    "bot-framework[all]==0.2.1",
     "claude-code-sdk>=0.0.25",
     "psycopg[binary]>=3.2.10",
     "pydantic>=2.11.10",
