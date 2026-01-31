@@ -16,7 +16,7 @@ from workers.bot.repo_collection import RepoCollection
 def main() -> None:
     load_dotenv()
 
-    bot_token = os.environ["TELEGRAM_BOT_TOKEN"]
+    bot_token = os.environ["BOT_TOKEN"]
     bot_database_url = os.environ["BOT_DB_URL"]
     redis_url = os.environ["REDIS_URL"]
 
