@@ -6,7 +6,7 @@ from src.bounded_context.project_management.entities.project import Project
 from src.flows.ask_flow.presenters.execution_progress_presenter import (
     ExecutionProgressPresenter,
 )
-from src.messaging import ClaudeRequest, MessagePublisher
+from src.messaging import ClaudeRequest, SyncMessagePublisher
 
 PermissionMode = Literal["default", "acceptEdits", "plan"]
 
@@ -14,13 +14,13 @@ PermissionMode = Literal["default", "acceptEdits", "plan"]
 class PromptExecutor:
     def __init__(
         self,
-        request_publisher: MessagePublisher,
+        request_publisher: SyncMessagePublisher,
         progress_presenter: ExecutionProgressPresenter,
     ) -> None:
         self._request_publisher = request_publisher
         self._progress_presenter = progress_presenter
 
-    async def execute(
+    def execute(
         self,
         project: Project,
         prompt: str,
@@ -48,7 +48,7 @@ class PromptExecutor:
             timestamp=datetime.now(tz=UTC),
         )
 
-        await self._request_publisher.publish(
+        self._request_publisher.publish(
             message=request,
             routing_key="claude.request",
         )

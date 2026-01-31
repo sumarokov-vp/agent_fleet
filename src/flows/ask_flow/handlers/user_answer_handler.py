@@ -1,5 +1,3 @@
-import asyncio
-
 from bot_framework.entities.bot_callback import BotCallback
 from bot_framework.language_management.repos.protocols.i_phrase_repo import IPhraseRepo
 from bot_framework.protocols.i_callback_answerer import ICallbackAnswerer
@@ -65,14 +63,12 @@ class UserAnswerHandler:
             self._message_service.send(chat_id=user.id, text=text)
             return
 
-        asyncio.run(
-            self._prompt_executor.execute(
-                project=project,
-                prompt=answer,
-                user_id=user.id,
-                language_code=user.language_code,
-                permission_mode="default",
-                session_id=session_id,
-                answer_to_question={"answer": answer},
-            )
+        self._prompt_executor.execute(
+            project=project,
+            prompt=answer,
+            user_id=user.id,
+            language_code=user.language_code,
+            permission_mode="default",
+            session_id=session_id,
+            answer_to_question={"answer": answer},
         )

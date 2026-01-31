@@ -9,7 +9,7 @@ from src.flows.ask_flow import AskFlowFactory, RedisPendingPromptStorage
 from src.flows.execution_control_flow import ExecutionControlFlowFactory
 from src.flows.project_selection_flow import ProjectSelectionFlowFactory
 from src.flows.welcome_flow import WelcomeMenuSender
-from src.messaging import MessagePublisher, RabbitMQConnection
+from src.messaging import SyncMessagePublisher
 from src.shared import RedisMessageForReplaceStorage, RedisProjectSelectionStateStorage
 from workers.bot.repo_collection import RepoCollection
 
@@ -50,8 +50,8 @@ def main() -> None:
     message_for_replace_storage = RedisMessageForReplaceStorage(redis_url)
     pending_prompt_storage = RedisPendingPromptStorage(redis_url)
 
-    rabbitmq_connection = RabbitMQConnection(rabbitmq_url)
-    request_publisher = MessagePublisher(rabbitmq_connection, "claude.requests")
+    request_publisher = SyncMessagePublisher(rabbitmq_url, "claude.requests")
+    stop_publisher = SyncMessagePublisher(rabbitmq_url, "claude.requests")
 
     project_selection_factory = ProjectSelectionFlowFactory(
         callback_answerer=app.callback_answerer,
@@ -73,7 +73,7 @@ def main() -> None:
         user_repo=app.user_repo,
         project_repo=repos.project_repo,
         project_state_storage=project_state_storage,
-        session_manager=repos.session_manager,
+        stop_publisher=stop_publisher,
     )
     execution_control_factory.register_handlers(
         callback_registry=app.callback_handler_registry,

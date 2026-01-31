@@ -21,7 +21,7 @@ from src.flows.ask_flow.presenters.execution_progress_presenter import (
 )
 from src.flows.ask_flow.protocols.i_pending_prompt_storage import IPendingPromptStorage
 from src.flows.ask_flow.services.prompt_executor import PromptExecutor
-from src.messaging import MessagePublisher
+from src.messaging import SyncMessagePublisher
 from src.shared.protocols import IMessageForReplaceStorage, IProjectSelectionStateStorage
 
 
@@ -36,7 +36,7 @@ class AskFlowFactory:
         project_state_storage: IProjectSelectionStateStorage,
         pending_prompt_storage: IPendingPromptStorage,
         message_for_replace_storage: IMessageForReplaceStorage,
-        request_publisher: MessagePublisher,
+        request_publisher: SyncMessagePublisher,
     ) -> None:
         self._callback_answerer = callback_answerer
         self._message_service = message_service

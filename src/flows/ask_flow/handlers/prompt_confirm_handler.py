@@ -1,4 +1,3 @@
-import asyncio
 from typing import Literal
 from uuid import uuid4
 
@@ -70,14 +69,12 @@ class PromptConfirmHandler:
             self._message_service.send(chat_id=user.id, text=text)
             return
 
-        asyncio.run(
-            self._prompt_executor.execute(
-                project=project,
-                prompt=prompt,
-                user_id=user.id,
-                language_code=user.language_code,
-                permission_mode=permission_mode,
-            )
+        self._prompt_executor.execute(
+            project=project,
+            prompt=prompt,
+            user_id=user.id,
+            language_code=user.language_code,
+            permission_mode=permission_mode,
         )
 
     def _parse_permission_mode(self, callback_data: str | None) -> PermissionMode:

@@ -1,5 +1,3 @@
-import asyncio
-
 from bot_framework.entities.bot_callback import BotCallback
 from bot_framework.language_management.repos.protocols.i_phrase_repo import IPhraseRepo
 from bot_framework.protocols.i_callback_answerer import ICallbackAnswerer
@@ -64,15 +62,13 @@ class ExecutePlanHandler:
             self._message_service.send(chat_id=user.id, text=text)
             return
 
-        asyncio.run(
-            self._prompt_executor.execute(
-                project=project,
-                prompt="Execute the plan",
-                user_id=user.id,
-                language_code=user.language_code,
-                permission_mode="acceptEdits",
-                session_id=session_id,
-            )
+        self._prompt_executor.execute(
+            project=project,
+            prompt="Execute the plan",
+            user_id=user.id,
+            language_code=user.language_code,
+            permission_mode="acceptEdits",
+            session_id=session_id,
         )
 
 
