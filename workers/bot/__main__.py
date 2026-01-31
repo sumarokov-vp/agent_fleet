@@ -37,6 +37,8 @@ def main() -> None:
         roles_json_path=data_path / "roles.json",
     )
 
+    app.set_start_allowed_roles({"admin", "developer"})
+
     project_state_storage = RedisProjectSelectionStateStorage(redis_url)
 
     project_selection_factory = ProjectSelectionFlowFactory(
@@ -49,7 +51,19 @@ def main() -> None:
     )
     project_selection_factory.register_handlers(
         callback_registry=app.callback_handler_registry,
-        message_registry=app.core.message_handler_registry,
+    )
+
+    execution_control_factory = ExecutionControlFlowFactory(
+        callback_answerer=app.callback_answerer,
+        message_sender=app.message_sender,
+        phrase_repo=app.phrase_repo,
+        user_repo=app.user_repo,
+        project_repo=repos.project_repo,
+        project_state_storage=project_state_storage,
+        session_manager=repos.session_manager,
+    )
+    execution_control_factory.register_handlers(
+        callback_registry=app.callback_handler_registry,
     )
 
     ask_flow_factory = AskFlowFactory(
@@ -61,20 +75,23 @@ def main() -> None:
         lock_manager=repos.lock_manager,
         session_manager=repos.session_manager,
     )
-    ask_flow_factory.register_handlers(
-        message_registry=app.core.message_handler_registry,
+
+    app.add_main_menu_button(
+        "menu.stop",
+        execution_control_factory.get_stop_callback_handler(),
+    )
+    app.add_main_menu_button(
+        "menu.status",
+        execution_control_factory.get_status_callback_handler(),
+    )
+    app.add_main_menu_button(
+        "menu.projects",
+        project_selection_factory.get_project_list_callback_handler(),
     )
 
-    execution_control_factory = ExecutionControlFlowFactory(
-        message_sender=app.message_sender,
-        phrase_repo=app.phrase_repo,
-        user_repo=app.user_repo,
-        project_repo=repos.project_repo,
-        project_state_storage=project_state_storage,
-        session_manager=repos.session_manager,
-    )
-    execution_control_factory.register_handlers(
-        message_registry=app.core.message_handler_registry,
+    app.core.message_handler_registry.register(
+        handler=ask_flow_factory.create_text_message_handler(),
+        content_types=["text"],
     )
 
     app.run()

@@ -1,5 +1,4 @@
 from bot_framework.language_management.repos.protocols.i_phrase_repo import IPhraseRepo
-from bot_framework.protocols.i_message_handler_registry import IMessageHandlerRegistry
 from bot_framework.protocols.i_message_sender import IMessageSender
 from bot_framework.role_management.repos.protocols.i_user_repo import IUserRepo
 
@@ -10,7 +9,7 @@ from src.bounded_context.agent_control.services.project_lock_manager import (
     ProjectLockManager,
 )
 from src.bounded_context.project_management.repos.project_repo import ProjectRepo
-from src.flows.ask_flow.handlers.ask_command_handler import AskCommandHandler
+from src.flows.ask_flow.handlers.text_message_handler import TextMessageHandler
 from src.flows.ask_flow.presenters.execution_progress_presenter import (
     ExecutionProgressPresenter,
 )
@@ -52,22 +51,12 @@ class AskFlowFactory:
             progress_presenter=self._create_progress_presenter(),
         )
 
-    def _create_ask_command_handler(self) -> AskCommandHandler:
-        return AskCommandHandler(
+    def create_text_message_handler(self) -> TextMessageHandler:
+        return TextMessageHandler(
             message_sender=self._message_sender,
             phrase_repo=self._phrase_repo,
             user_repo=self._user_repo,
             project_repo=self._project_repo,
             project_state_storage=self._project_state_storage,
             prompt_executor=self._create_prompt_executor(),
-        )
-
-    def register_handlers(
-        self,
-        message_registry: IMessageHandlerRegistry,
-    ) -> None:
-        message_registry.register(
-            handler=self._create_ask_command_handler(),
-            commands=["ask"],
-            content_types=["text"],
         )

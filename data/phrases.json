@@ -1,7 +1,19 @@
 {
   "bot.start.welcome": {
-    "ru": "Добро пожаловать в Agent Fleet! Используйте /projects для выбора проекта.",
-    "en": "Welcome to Agent Fleet! Use /projects to select a project."
+    "ru": "Добро пожаловать в Agent Fleet!",
+    "en": "Welcome to Agent Fleet!"
+  },
+  "menu.projects": {
+    "ru": "📁 Проекты",
+    "en": "📁 Projects"
+  },
+  "menu.status": {
+    "ru": "📊 Статус",
+    "en": "📊 Status"
+  },
+  "menu.stop": {
+    "ru": "🛑 Стоп",
+    "en": "🛑 Stop"
   },
   "bot.access_denied": {
     "ru": "Доступ запрещён. Вы не в списке разрешённых пользователей.",
@@ -70,6 +82,10 @@
   "ask.project_not_selected": {
     "ru": "Сначала выберите проект через /projects",
     "en": "First select a project via /projects"
+  },
+  "ask.project_not_selected_hint": {
+    "ru": "Сначала выберите проект через меню",
+    "en": "First select a project via menu"
   },
   "ask.processing": {
     "ru": "Обрабатываю запрос...",

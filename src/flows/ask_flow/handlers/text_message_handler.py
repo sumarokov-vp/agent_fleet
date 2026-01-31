@@ -13,7 +13,7 @@ from src.flows.project_selection_flow.protocols.i_project_selection_state_storag
 )
 
 
-class AskCommandHandler(IMessageHandler):
+class TextMessageHandler(IMessageHandler):
     allowed_roles: set[str] | None = None
 
     def __init__(
@@ -41,21 +41,12 @@ class AskCommandHandler(IMessageHandler):
         if not message.text:
             return
 
-        parts = message.text.split(maxsplit=1)
-        if len(parts) < 2:
-            text = self._phrase_repo.get_phrase(
-                key="ask.prompt_required",
-                language_code=user.language_code,
-            )
-            self._message_sender.send(chat_id=user.id, text=text)
-            return
-
-        prompt = parts[1]
+        prompt = message.text
 
         project_id = self._project_state_storage.get_selected_project(user.id)
         if not project_id:
             text = self._phrase_repo.get_phrase(
-                key="ask.project_not_selected",
+                key="ask.project_not_selected_hint",
                 language_code=user.language_code,
             )
             self._message_sender.send(chat_id=user.id, text=text)
@@ -64,7 +55,7 @@ class AskCommandHandler(IMessageHandler):
         project = self._project_repo.get_by_id(project_id)
         if not project:
             text = self._phrase_repo.get_phrase(
-                key="ask.project_not_selected",
+                key="ask.project_not_selected_hint",
                 language_code=user.language_code,
             )
             self._message_sender.send(chat_id=user.id, text=text)

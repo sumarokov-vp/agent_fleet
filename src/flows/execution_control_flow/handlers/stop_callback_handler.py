@@ -1,8 +1,9 @@
 import asyncio
+from uuid import uuid4
 
-from bot_framework.entities.bot_message import BotMessage
+from bot_framework.entities.bot_callback import BotCallback
 from bot_framework.language_management.repos.protocols.i_phrase_repo import IPhraseRepo
-from bot_framework.protocols.i_message_handler import IMessageHandler
+from bot_framework.protocols.i_callback_answerer import ICallbackAnswerer
 from bot_framework.protocols.i_message_sender import IMessageSender
 from bot_framework.role_management.repos.protocols.i_user_repo import IUserRepo
 
@@ -14,28 +15,29 @@ from src.flows.project_selection_flow.protocols.i_project_selection_state_storag
 )
 
 
-class StopCommandHandler(IMessageHandler):
-    allowed_roles: set[str] | None = None
-
+class StopCallbackHandler:
     def __init__(
         self,
+        callback_answerer: ICallbackAnswerer,
         message_sender: IMessageSender,
         phrase_repo: IPhraseRepo,
         user_repo: IUserRepo,
         project_state_storage: IProjectSelectionStateStorage,
         session_manager: AgentSessionManager,
     ) -> None:
+        self.callback_answerer = callback_answerer
         self._message_sender = message_sender
         self._phrase_repo = phrase_repo
         self._user_repo = user_repo
         self._project_state_storage = project_state_storage
         self._session_manager = session_manager
+        self.prefix = uuid4().hex
+        self.allowed_roles: set[str] | None = None
 
-    def handle(self, message: BotMessage) -> None:
-        if not message.from_user:
-            raise ValueError("message.from_user is required but was None")
+    def handle(self, callback: BotCallback) -> None:
+        self.callback_answerer.answer(callback_query_id=callback.id)
 
-        user = self._user_repo.get_by_id(id=message.from_user.id)
+        user = self._user_repo.get_by_id(id=callback.user_id)
 
         project_id = self._project_state_storage.get_selected_project(user.id)
         if not project_id:
