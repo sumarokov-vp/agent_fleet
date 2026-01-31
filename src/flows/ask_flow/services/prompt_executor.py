@@ -1,9 +1,6 @@
 from src.bounded_context.agent_control.services.agent_session_manager import (
     AgentSessionManager,
 )
-from src.bounded_context.agent_control.services.project_lock_manager import (
-    ProjectLockManager,
-)
 from src.bounded_context.project_management.entities.project import Project
 from src.flows.ask_flow.presenters.execution_progress_presenter import (
     ExecutionProgressPresenter,
@@ -13,11 +10,9 @@ from src.flows.ask_flow.presenters.execution_progress_presenter import (
 class PromptExecutor:
     def __init__(
         self,
-        lock_manager: ProjectLockManager,
         session_manager: AgentSessionManager,
         progress_presenter: ExecutionProgressPresenter,
     ) -> None:
-        self._lock_manager = lock_manager
         self._session_manager = session_manager
         self._progress_presenter = progress_presenter
 
@@ -27,10 +22,7 @@ class PromptExecutor:
         prompt: str,
         user_id: int,
         language_code: str,
-    ) -> bool:
-        if not self._lock_manager.acquire_lock(project.id):
-            return False
-
+    ) -> None:
         session = None
         try:
             self._progress_presenter.send_started(
@@ -45,7 +37,7 @@ class PromptExecutor:
 
             client = self._session_manager.get_client(session.id)
             if not client:
-                return False
+                return
 
             await client.connect()
             await client.query(prompt)
@@ -59,8 +51,6 @@ class PromptExecutor:
                 chat_id=user_id,
                 language_code=language_code,
             )
-            return True
         finally:
-            self._lock_manager.release_lock(project.id)
             if session:
                 await self._session_manager.close_session(session.id)

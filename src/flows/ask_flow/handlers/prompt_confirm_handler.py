@@ -59,7 +59,7 @@ class PromptConfirmHandler:
             self._message_service.send(chat_id=user.id, text=text)
             return
 
-        success = asyncio.run(
+        asyncio.run(
             self._prompt_executor.execute(
                 project=project,
                 prompt=prompt,
@@ -67,10 +67,3 @@ class PromptConfirmHandler:
                 language_code=user.language_code,
             )
         )
-
-        if not success:
-            text = self._phrase_repo.get_phrase(
-                key="lock.project_busy",
-                language_code=user.language_code,
-            )
-            self._message_service.send(chat_id=user.id, text=text)

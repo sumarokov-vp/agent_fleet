@@ -31,7 +31,6 @@ def main() -> None:
 
     repos = RepoCollection(
         environments_path=environments_path,
-        redis_url=redis_url,
     )
 
     app = BotApplication(
@@ -84,7 +83,6 @@ def main() -> None:
         project_state_storage=project_state_storage,
         pending_prompt_storage=pending_prompt_storage,
         message_for_replace_storage=message_for_replace_storage,
-        lock_manager=repos.lock_manager,
         session_manager=repos.session_manager,
     )
     ask_flow_factory.register_handlers(

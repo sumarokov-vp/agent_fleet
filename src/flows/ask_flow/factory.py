@@ -9,9 +9,6 @@ from bot_framework.role_management.repos.protocols.i_user_repo import IUserRepo
 from src.bounded_context.agent_control.services.agent_session_manager import (
     AgentSessionManager,
 )
-from src.bounded_context.agent_control.services.project_lock_manager import (
-    ProjectLockManager,
-)
 from src.bounded_context.project_management.repos.project_repo import ProjectRepo
 from src.flows.ask_flow.handlers.prompt_cancel_handler import PromptCancelHandler
 from src.flows.ask_flow.handlers.prompt_confirm_handler import PromptConfirmHandler
@@ -36,7 +33,6 @@ class AskFlowFactory:
         project_state_storage: IProjectSelectionStateStorage,
         pending_prompt_storage: IPendingPromptStorage,
         message_for_replace_storage: IMessageForReplaceStorage,
-        lock_manager: ProjectLockManager,
         session_manager: AgentSessionManager,
     ) -> None:
         self._callback_answerer = callback_answerer
@@ -47,7 +43,6 @@ class AskFlowFactory:
         self._project_state_storage = project_state_storage
         self._pending_prompt_storage = pending_prompt_storage
         self._message_for_replace_storage = message_for_replace_storage
-        self._lock_manager = lock_manager
         self._session_manager = session_manager
 
         self._prompt_confirm_handler: PromptConfirmHandler | None = None
@@ -62,7 +57,6 @@ class AskFlowFactory:
 
     def _create_prompt_executor(self) -> PromptExecutor:
         return PromptExecutor(
-            lock_manager=self._lock_manager,
             session_manager=self._session_manager,
             progress_presenter=self._create_progress_presenter(),
         )

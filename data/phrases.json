@@ -91,10 +91,6 @@
     "ru": "Обрабатываю запрос...",
     "en": "Processing request..."
   },
-  "lock.project_busy": {
-    "ru": "Проект занят другой задачей. Дождитесь завершения.",
-    "en": "Project is busy with another task. Wait for completion."
-  },
   "estimation.title": {
     "ru": "Оценка задачи: {title}",
     "en": "Task estimation: {title}"
