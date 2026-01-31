@@ -8,19 +8,12 @@ services:
     env_file:
       - ../../.env
     working_dir: /app
+    network_mode: host
     volumes:
-      # Монтируем проект
       - ../..:/app
-      # Монтируем bot-framework
       - /Users/vladimirsumarokov/dev/smartist/bot_framework:/Users/vladimirsumarokov/dev/smartist/bot_framework:ro
-      # Монтируем проекты для доступа Claude SDK
       - /Users/vladimirsumarokov/dev:/Users/vladimirsumarokov/dev:ro
-    depends_on:
-      - rabbitmq
-      - redis
     restart: unless-stopped
-    networks:
-      - agent_fleet
 
   bot:
     build:
@@ -31,16 +24,11 @@ services:
     env_file:
       - ../../.env
     working_dir: /app
+    network_mode: host
     volumes:
       - ../..:/app
       - /Users/vladimirsumarokov/dev/smartist/bot_framework:/Users/vladimirsumarokov/dev/smartist/bot_framework:ro
-    depends_on:
-      - rabbitmq
-      - redis
-      - postgres
     restart: unless-stopped
-    networks:
-      - agent_fleet
 
   bot-consumer:
     build:
@@ -51,62 +39,8 @@ services:
     env_file:
       - ../../.env
     working_dir: /app
+    network_mode: host
     volumes:
       - ../..:/app
       - /Users/vladimirsumarokov/dev/smartist/bot_framework:/Users/vladimirsumarokov/dev/smartist/bot_framework:ro
-    depends_on:
-      - rabbitmq
-      - redis
     restart: unless-stopped
-    networks:
-      - agent_fleet
-
-  postgres:
-    image: postgres:15.5-alpine3.19
-    container_name: agent_fleet_postgres
-    environment:
-      POSTGRES_USER: sumarokov
-      POSTGRES_PASSWORD: Leonard0
-      POSTGRES_DB: agent_fleet_bot
-    ports:
-      - "9876:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    restart: unless-stopped
-    networks:
-      - agent_fleet
-
-  redis:
-    image: redis:latest
-    container_name: agent_fleet_redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    restart: unless-stopped
-    networks:
-      - agent_fleet
-
-  rabbitmq:
-    image: rabbitmq:3.13.6-management
-    container_name: agent_fleet_rabbitmq
-    environment:
-      RABBITMQ_DEFAULT_USER: sumarokov
-      RABBITMQ_DEFAULT_PASS: Leonard0
-    ports:
-      - "5672:5672"
-      - "8081:15672"
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-    restart: unless-stopped
-    networks:
-      - agent_fleet
-
-volumes:
-  postgres_data:
-  redis_data:
-  rabbitmq_data:
-
-networks:
-  agent_fleet:
-    driver: bridge
