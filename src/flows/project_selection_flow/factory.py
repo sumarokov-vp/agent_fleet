@@ -3,8 +3,7 @@ from bot_framework.protocols.i_callback_answerer import ICallbackAnswerer
 from bot_framework.protocols.i_callback_handler_registry import (
     ICallbackHandlerRegistry,
 )
-from bot_framework.protocols.i_message_replacer import IMessageReplacer
-from bot_framework.protocols.i_message_sender import IMessageSender
+from bot_framework.protocols.i_message_service import IMessageService
 from bot_framework.role_management.repos.protocols.i_user_repo import IUserRepo
 
 from src.bounded_context.project_management.repos.project_repo import ProjectRepo
@@ -24,8 +23,7 @@ class ProjectSelectionFlowFactory:
     def __init__(
         self,
         callback_answerer: ICallbackAnswerer,
-        message_sender: IMessageSender,
-        message_replacer: IMessageReplacer,
+        message_service: IMessageService,
         phrase_repo: IPhraseRepo,
         project_repo: ProjectRepo,
         state_storage: IProjectSelectionStateStorage,
@@ -33,8 +31,7 @@ class ProjectSelectionFlowFactory:
         user_repo: IUserRepo,
     ) -> None:
         self._callback_answerer = callback_answerer
-        self._message_sender = message_sender
-        self._message_replacer = message_replacer
+        self._message_service = message_service
         self._phrase_repo = phrase_repo
         self._project_repo = project_repo
         self._state_storage = state_storage
@@ -48,8 +45,7 @@ class ProjectSelectionFlowFactory:
         if self._project_select_handler is None:
             self._project_select_handler = ProjectSelectHandler(
                 callback_answerer=self._callback_answerer,
-                message_sender=self._message_sender,
-                message_replacer=self._message_replacer,
+                message_service=self._message_service,
                 phrase_repo=self._phrase_repo,
                 project_repo=self._project_repo,
                 state_storage=self._state_storage,
@@ -61,8 +57,7 @@ class ProjectSelectionFlowFactory:
     def _create_project_list_presenter(self) -> ProjectListPresenter:
         project_select_handler = self.get_project_select_handler()
         return ProjectListPresenter(
-            message_sender=self._message_sender,
-            message_replacer=self._message_replacer,
+            message_service=self._message_service,
             phrase_repo=self._phrase_repo,
             message_for_replace_storage=self._message_for_replace_storage,
             project_select_handler_prefix=project_select_handler.prefix,

@@ -3,7 +3,7 @@ from bot_framework.entities.keyboard import Keyboard
 from bot_framework.entities.user import User
 from bot_framework.language_management.repos.protocols.i_phrase_repo import IPhraseRepo
 from bot_framework.menus.start_menu.main_menu_sender import MenuButtonConfig
-from bot_framework.protocols.i_message_sender import IMessageSender
+from bot_framework.protocols.i_message_service import IMessageService
 
 from src.bounded_context.project_management.repos.project_repo import ProjectRepo
 from src.shared.protocols import IMessageForReplaceStorage, IProjectSelectionStateStorage
@@ -12,14 +12,14 @@ from src.shared.protocols import IMessageForReplaceStorage, IProjectSelectionSta
 class WelcomeMenuSender:
     def __init__(
         self,
-        message_sender: IMessageSender,
+        message_service: IMessageService,
         phrase_repo: IPhraseRepo,
         project_repo: ProjectRepo,
         state_storage: IProjectSelectionStateStorage,
         message_for_replace_storage: IMessageForReplaceStorage,
         buttons: list[MenuButtonConfig],
     ) -> None:
-        self._message_sender = message_sender
+        self._message_service = message_service
         self._phrase_repo = phrase_repo
         self._project_repo = project_repo
         self._state_storage = state_storage
@@ -47,7 +47,7 @@ class WelcomeMenuSender:
 
         keyboard = Keyboard(rows=rows)
 
-        bot_message = self._message_sender.send(
+        bot_message = self._message_service.send(
             chat_id=user.id,
             text=text,
             keyboard=keyboard,

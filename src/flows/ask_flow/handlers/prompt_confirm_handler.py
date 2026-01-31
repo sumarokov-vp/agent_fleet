@@ -4,7 +4,7 @@ from uuid import uuid4
 from bot_framework.entities.bot_callback import BotCallback
 from bot_framework.language_management.repos.protocols.i_phrase_repo import IPhraseRepo
 from bot_framework.protocols.i_callback_answerer import ICallbackAnswerer
-from bot_framework.protocols.i_message_sender import IMessageSender
+from bot_framework.protocols.i_message_service import IMessageService
 from bot_framework.role_management.repos.protocols.i_user_repo import IUserRepo
 
 from src.bounded_context.project_management.repos.project_repo import ProjectRepo
@@ -16,7 +16,7 @@ class PromptConfirmHandler:
     def __init__(
         self,
         callback_answerer: ICallbackAnswerer,
-        message_sender: IMessageSender,
+        message_service: IMessageService,
         phrase_repo: IPhraseRepo,
         user_repo: IUserRepo,
         project_repo: ProjectRepo,
@@ -24,7 +24,7 @@ class PromptConfirmHandler:
         prompt_executor: PromptExecutor,
     ) -> None:
         self.callback_answerer = callback_answerer
-        self._message_sender = message_sender
+        self._message_service = message_service
         self._phrase_repo = phrase_repo
         self._user_repo = user_repo
         self._project_repo = project_repo
@@ -44,7 +44,7 @@ class PromptConfirmHandler:
                 key="ask.prompt_expired",
                 language_code=user.language_code,
             )
-            self._message_sender.send(chat_id=user.id, text=text)
+            self._message_service.send(chat_id=user.id, text=text)
             return
 
         project_id, prompt = pending
@@ -56,7 +56,7 @@ class PromptConfirmHandler:
                 key="ask.project_not_selected_hint",
                 language_code=user.language_code,
             )
-            self._message_sender.send(chat_id=user.id, text=text)
+            self._message_service.send(chat_id=user.id, text=text)
             return
 
         success = asyncio.run(
@@ -73,4 +73,4 @@ class PromptConfirmHandler:
                 key="lock.project_busy",
                 language_code=user.language_code,
             )
-            self._message_sender.send(chat_id=user.id, text=text)
+            self._message_service.send(chat_id=user.id, text=text)

@@ -3,8 +3,7 @@ from bot_framework.entities.button import Button
 from bot_framework.entities.keyboard import Keyboard
 from bot_framework.entities.user import User
 from bot_framework.language_management.repos.protocols.i_phrase_repo import IPhraseRepo
-from bot_framework.protocols.i_message_replacer import IMessageReplacer
-from bot_framework.protocols.i_message_sender import IMessageSender
+from bot_framework.protocols.i_message_service import IMessageService
 
 from src.bounded_context.project_management.entities.project import Project
 from src.shared.protocols import IMessageForReplaceStorage
@@ -13,14 +12,12 @@ from src.shared.protocols import IMessageForReplaceStorage
 class ProjectListPresenter:
     def __init__(
         self,
-        message_sender: IMessageSender,
-        message_replacer: IMessageReplacer,
+        message_service: IMessageService,
         phrase_repo: IPhraseRepo,
         message_for_replace_storage: IMessageForReplaceStorage,
         project_select_handler_prefix: str,
     ) -> None:
-        self._message_sender = message_sender
-        self._message_replacer = message_replacer
+        self._message_service = message_service
         self._phrase_repo = phrase_repo
         self._message_for_replace_storage = message_for_replace_storage
         self._project_select_handler_prefix = project_select_handler_prefix
@@ -63,10 +60,10 @@ class ProjectListPresenter:
     ) -> BotMessage:
         stored_message = self._message_for_replace_storage.get(chat_id)
         if stored_message:
-            return self._message_replacer.replace(
+            return self._message_service.replace(
                 chat_id=chat_id,
                 message_id=stored_message.message_id,
                 text=text,
                 keyboard=keyboard,
             )
-        return self._message_sender.send(chat_id=chat_id, text=text, keyboard=keyboard)
+        return self._message_service.send(chat_id=chat_id, text=text, keyboard=keyboard)

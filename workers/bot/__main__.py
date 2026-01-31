@@ -51,8 +51,7 @@ def main() -> None:
 
     project_selection_factory = ProjectSelectionFlowFactory(
         callback_answerer=app.callback_answerer,
-        message_sender=app.message_sender,
-        message_replacer=app.message_replacer,
+        message_service=app.message_service,
         phrase_repo=app.phrase_repo,
         project_repo=repos.project_repo,
         state_storage=project_state_storage,
@@ -78,12 +77,13 @@ def main() -> None:
 
     ask_flow_factory = AskFlowFactory(
         callback_answerer=app.callback_answerer,
-        message_sender=app.message_sender,
+        message_service=app.message_service,
         phrase_repo=app.phrase_repo,
         user_repo=app.user_repo,
         project_repo=repos.project_repo,
         project_state_storage=project_state_storage,
         pending_prompt_storage=pending_prompt_storage,
+        message_for_replace_storage=message_for_replace_storage,
         lock_manager=repos.lock_manager,
         session_manager=repos.session_manager,
     )
@@ -105,7 +105,7 @@ def main() -> None:
     )
 
     welcome_menu_sender = WelcomeMenuSender(
-        message_sender=app.message_sender,
+        message_service=app.message_service,
         phrase_repo=app.phrase_repo,
         project_repo=repos.project_repo,
         state_storage=project_state_storage,

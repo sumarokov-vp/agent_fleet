@@ -1,7 +1,7 @@
 from bot_framework.entities.bot_message import BotMessage
 from bot_framework.language_management.repos.protocols.i_phrase_repo import IPhraseRepo
 from bot_framework.protocols.i_message_handler import IMessageHandler
-from bot_framework.protocols.i_message_sender import IMessageSender
+from bot_framework.protocols.i_message_service import IMessageService
 from bot_framework.role_management.repos.protocols.i_user_repo import IUserRepo
 
 from src.bounded_context.project_management.repos.project_repo import ProjectRepo
@@ -15,7 +15,7 @@ class TextMessageHandler(IMessageHandler):
 
     def __init__(
         self,
-        message_sender: IMessageSender,
+        message_service: IMessageService,
         phrase_repo: IPhraseRepo,
         user_repo: IUserRepo,
         project_repo: ProjectRepo,
@@ -23,7 +23,7 @@ class TextMessageHandler(IMessageHandler):
         pending_prompt_storage: IPendingPromptStorage,
         confirmation_presenter: ConfirmationPresenter,
     ) -> None:
-        self._message_sender = message_sender
+        self._message_service = message_service
         self._phrase_repo = phrase_repo
         self._user_repo = user_repo
         self._project_repo = project_repo
@@ -48,7 +48,7 @@ class TextMessageHandler(IMessageHandler):
                 key="ask.project_not_selected_hint",
                 language_code=user.language_code,
             )
-            self._message_sender.send(chat_id=user.id, text=text)
+            self._message_service.send(chat_id=user.id, text=text)
             return
 
         project = self._project_repo.get_by_id(project_id)
@@ -57,7 +57,7 @@ class TextMessageHandler(IMessageHandler):
                 key="ask.project_not_selected_hint",
                 language_code=user.language_code,
             )
-            self._message_sender.send(chat_id=user.id, text=text)
+            self._message_service.send(chat_id=user.id, text=text)
             return
 
         self._pending_prompt_storage.save_pending_prompt(

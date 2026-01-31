@@ -1,7 +1,9 @@
 from bot_framework.entities.button import Button
 from bot_framework.entities.keyboard import Keyboard
 from bot_framework.language_management.repos.protocols.i_phrase_repo import IPhraseRepo
-from bot_framework.protocols.i_message_sender import IMessageSender
+from bot_framework.protocols.i_message_service import IMessageService
+
+from src.shared.protocols import IMessageForReplaceStorage
 
 
 class ConfirmationPresenter:
@@ -9,13 +11,15 @@ class ConfirmationPresenter:
 
     def __init__(
         self,
-        message_sender: IMessageSender,
+        message_service: IMessageService,
         phrase_repo: IPhraseRepo,
+        message_for_replace_storage: IMessageForReplaceStorage,
         confirm_prefix: str,
         cancel_prefix: str,
     ) -> None:
-        self._message_sender = message_sender
+        self._message_service = message_service
         self._phrase_repo = phrase_repo
+        self._message_for_replace_storage = message_for_replace_storage
         self._confirm_prefix = confirm_prefix
         self._cancel_prefix = cancel_prefix
 
@@ -55,8 +59,9 @@ class ConfirmationPresenter:
             ]
         )
 
-        self._message_sender.send(
+        bot_message = self._message_service.send(
             chat_id=chat_id,
             text=text,
             keyboard=keyboard,
         )
+        self._message_for_replace_storage.save(chat_id, bot_message)

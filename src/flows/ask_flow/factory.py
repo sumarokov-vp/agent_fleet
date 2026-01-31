@@ -3,7 +3,7 @@ from bot_framework.protocols.i_callback_answerer import ICallbackAnswerer
 from bot_framework.protocols.i_callback_handler_registry import (
     ICallbackHandlerRegistry,
 )
-from bot_framework.protocols.i_message_sender import IMessageSender
+from bot_framework.protocols.i_message_service import IMessageService
 from bot_framework.role_management.repos.protocols.i_user_repo import IUserRepo
 
 from src.bounded_context.agent_control.services.agent_session_manager import (
@@ -22,29 +22,31 @@ from src.flows.ask_flow.presenters.execution_progress_presenter import (
 )
 from src.flows.ask_flow.protocols.i_pending_prompt_storage import IPendingPromptStorage
 from src.flows.ask_flow.services.prompt_executor import PromptExecutor
-from src.shared.protocols import IProjectSelectionStateStorage
+from src.shared.protocols import IMessageForReplaceStorage, IProjectSelectionStateStorage
 
 
 class AskFlowFactory:
     def __init__(
         self,
         callback_answerer: ICallbackAnswerer,
-        message_sender: IMessageSender,
+        message_service: IMessageService,
         phrase_repo: IPhraseRepo,
         user_repo: IUserRepo,
         project_repo: ProjectRepo,
         project_state_storage: IProjectSelectionStateStorage,
         pending_prompt_storage: IPendingPromptStorage,
+        message_for_replace_storage: IMessageForReplaceStorage,
         lock_manager: ProjectLockManager,
         session_manager: AgentSessionManager,
     ) -> None:
         self._callback_answerer = callback_answerer
-        self._message_sender = message_sender
+        self._message_service = message_service
         self._phrase_repo = phrase_repo
         self._user_repo = user_repo
         self._project_repo = project_repo
         self._project_state_storage = project_state_storage
         self._pending_prompt_storage = pending_prompt_storage
+        self._message_for_replace_storage = message_for_replace_storage
         self._lock_manager = lock_manager
         self._session_manager = session_manager
 
@@ -53,8 +55,9 @@ class AskFlowFactory:
 
     def _create_progress_presenter(self) -> ExecutionProgressPresenter:
         return ExecutionProgressPresenter(
-            message_sender=self._message_sender,
+            message_service=self._message_service,
             phrase_repo=self._phrase_repo,
+            message_for_replace_storage=self._message_for_replace_storage,
         )
 
     def _create_prompt_executor(self) -> PromptExecutor:
@@ -66,8 +69,9 @@ class AskFlowFactory:
 
     def _create_confirmation_presenter(self) -> ConfirmationPresenter:
         return ConfirmationPresenter(
-            message_sender=self._message_sender,
+            message_service=self._message_service,
             phrase_repo=self._phrase_repo,
+            message_for_replace_storage=self._message_for_replace_storage,
             confirm_prefix=self.get_prompt_confirm_handler().prefix,
             cancel_prefix=self.get_prompt_cancel_handler().prefix,
         )
@@ -76,7 +80,7 @@ class AskFlowFactory:
         if self._prompt_confirm_handler is None:
             self._prompt_confirm_handler = PromptConfirmHandler(
                 callback_answerer=self._callback_answerer,
-                message_sender=self._message_sender,
+                message_service=self._message_service,
                 phrase_repo=self._phrase_repo,
                 user_repo=self._user_repo,
                 project_repo=self._project_repo,
@@ -89,7 +93,7 @@ class AskFlowFactory:
         if self._prompt_cancel_handler is None:
             self._prompt_cancel_handler = PromptCancelHandler(
                 callback_answerer=self._callback_answerer,
-                message_sender=self._message_sender,
+                message_service=self._message_service,
                 phrase_repo=self._phrase_repo,
                 user_repo=self._user_repo,
                 pending_prompt_storage=self._pending_prompt_storage,
@@ -98,7 +102,7 @@ class AskFlowFactory:
 
     def create_text_message_handler(self) -> TextMessageHandler:
         return TextMessageHandler(
-            message_sender=self._message_sender,
+            message_service=self._message_service,
             phrase_repo=self._phrase_repo,
             user_repo=self._user_repo,
             project_repo=self._project_repo,
