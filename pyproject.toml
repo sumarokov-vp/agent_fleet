@@ -1,5 +1,5 @@
 [project]
-name = "devenv-manager"
+name = "agent_fleet"
 version = "0.1.0"
 description = "Remote development environment manager via Telegram"
 readme = "README.md"
@@ -23,6 +23,7 @@ dev = [
     "pytest-env>=1.2.0",
     "rope>=1.14.0",
     "ruff>=0.13.3",
+    "types-pyyaml>=6.0.12.20250915",
 ]
 
 [tool.pyright]
@@ -82,6 +83,20 @@ disallow_any_explicit = false
 plugins = []
 
 show_error_codes = true
+
+[tool.importlinter]
+root_packages = ["src", "workers"]
+
+# Глобальные слои: workers -> src
+[[tool.importlinter.contracts]]
+name = "Global layers"
+type = "layers"
+layers = ["workers", "src"]
+
+[[tool.importlinter.contracts]]
+name = "src layers"
+type = "layers"
+layers = ["src.flows", "src.bounded_context", "src.base_protocols"]
 
 [tool.uv.sources]
 bot-framework = { path = "/Users/vladimirsumarokov/dev/smartist/bot_framework", editable = true }
