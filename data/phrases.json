@@ -142,5 +142,25 @@
   "stop.no_active_session": {
     "ru": "Нет активной сессии для остановки",
     "en": "No active session to stop"
+  },
+  "ask.confirmation_warning": {
+    "ru": "Вы собираетесь отправить промпт в проект: {project_name}",
+    "en": "You are about to send a prompt to project: {project_name}"
+  },
+  "ask.confirm_button": {
+    "ru": "✅ Подтвердить",
+    "en": "✅ Confirm"
+  },
+  "ask.cancel_button": {
+    "ru": "❌ Отменить",
+    "en": "❌ Cancel"
+  },
+  "ask.prompt_cancelled": {
+    "ru": "Запрос отменён",
+    "en": "Request cancelled"
+  },
+  "ask.prompt_expired": {
+    "ru": "Запрос истёк. Пожалуйста, введите промпт заново.",
+    "en": "Request expired. Please enter the prompt again."
   }
 }

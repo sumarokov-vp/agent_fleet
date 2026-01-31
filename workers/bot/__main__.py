@@ -5,7 +5,7 @@ from pathlib import Path
 from bot_framework.app.bot_application import BotApplication
 from dotenv import load_dotenv
 
-from src.flows.ask_flow import AskFlowFactory
+from src.flows.ask_flow import AskFlowFactory, RedisPendingPromptStorage
 from src.flows.execution_control_flow import ExecutionControlFlowFactory
 from src.flows.project_selection_flow import (
     ProjectSelectionFlowFactory,
@@ -47,6 +47,7 @@ def main() -> None:
     app.set_start_allowed_roles({"admin", "developer"})
 
     project_state_storage = RedisProjectSelectionStateStorage(redis_url)
+    pending_prompt_storage = RedisPendingPromptStorage(redis_url)
 
     project_selection_factory = ProjectSelectionFlowFactory(
         callback_answerer=app.callback_answerer,
@@ -74,13 +75,18 @@ def main() -> None:
     )
 
     ask_flow_factory = AskFlowFactory(
+        callback_answerer=app.callback_answerer,
         message_sender=app.message_sender,
         phrase_repo=app.phrase_repo,
         user_repo=app.user_repo,
         project_repo=repos.project_repo,
         project_state_storage=project_state_storage,
+        pending_prompt_storage=pending_prompt_storage,
         lock_manager=repos.lock_manager,
         session_manager=repos.session_manager,
+    )
+    ask_flow_factory.register_handlers(
+        callback_registry=app.callback_handler_registry,
     )
 
     app.add_main_menu_button(
