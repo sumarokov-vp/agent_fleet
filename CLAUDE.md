@@ -12,7 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - bot-framework — собственный фреймворк для Telegram-ботов
 - claude-code-sdk — взаимодействие с Claude Code
 - Redis — управление состоянием (флаги занятости с TTL)
-- YAML — реестр окружений
+- YAML — реестр проектов
 
 ## Дополнительные директории
 
