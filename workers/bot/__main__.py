@@ -64,7 +64,7 @@ def main() -> None:
 
     execution_control_factory = ExecutionControlFlowFactory(
         callback_answerer=app.callback_answerer,
-        message_sender=app.message_sender,
+        message_service=app.message_service,
         phrase_repo=app.phrase_repo,
         user_repo=app.user_repo,
         project_repo=repos.project_repo,
