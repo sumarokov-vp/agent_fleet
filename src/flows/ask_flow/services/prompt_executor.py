@@ -31,22 +31,22 @@ class PromptExecutor:
         if not self._lock_manager.acquire_lock(project.id):
             return False
 
-        self._progress_presenter.send_started(
-            chat_id=user_id,
-            language_code=language_code,
-        )
-
-        session = self._session_manager.create_session(
-            project_id=project.id,
-            working_directory=project.path,
-        )
-
-        client = self._session_manager.get_client(session.id)
-        if not client:
-            self._lock_manager.release_lock(project.id)
-            return False
-
+        session = None
         try:
+            self._progress_presenter.send_started(
+                chat_id=user_id,
+                language_code=language_code,
+            )
+
+            session = self._session_manager.create_session(
+                project_id=project.id,
+                working_directory=project.path,
+            )
+
+            client = self._session_manager.get_client(session.id)
+            if not client:
+                return False
+
             await client.connect()
             await client.query(prompt)
             async for message in client.receive_messages():
@@ -54,12 +54,13 @@ class PromptExecutor:
                     chat_id=user_id,
                     message=message,
                 )
+
+            self._progress_presenter.send_completed(
+                chat_id=user_id,
+                language_code=language_code,
+            )
+            return True
         finally:
             self._lock_manager.release_lock(project.id)
-            await self._session_manager.close_session(session.id)
-
-        self._progress_presenter.send_completed(
-            chat_id=user_id,
-            language_code=language_code,
-        )
-        return True
+            if session:
+                await self._session_manager.close_session(session.id)
