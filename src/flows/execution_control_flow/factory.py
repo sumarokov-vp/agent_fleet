@@ -6,9 +6,6 @@ from bot_framework.protocols.i_callback_handler_registry import (
 from bot_framework.protocols.i_message_service import IMessageService
 from bot_framework.role_management.repos.protocols.i_user_repo import IUserRepo
 
-from src.bounded_context.agent_control.services.agent_session_manager import (
-    AgentSessionManager,
-)
 from src.bounded_context.project_management.repos.project_repo import ProjectRepo
 from src.flows.execution_control_flow.handlers.status_callback_handler import (
     StatusCallbackHandler,
@@ -17,6 +14,7 @@ from src.flows.execution_control_flow.handlers.stop_callback_handler import (
     StopCallbackHandler,
 )
 from src.flows.execution_control_flow.presenters.status_presenter import StatusPresenter
+from src.messaging import SyncMessagePublisher
 from src.shared.protocols import IProjectSelectionStateStorage
 
 
@@ -29,7 +27,7 @@ class ExecutionControlFlowFactory:
         user_repo: IUserRepo,
         project_repo: ProjectRepo,
         project_state_storage: IProjectSelectionStateStorage,
-        session_manager: AgentSessionManager,
+        stop_publisher: SyncMessagePublisher,
     ) -> None:
         self._callback_answerer = callback_answerer
         self._message_service = message_service
@@ -37,7 +35,7 @@ class ExecutionControlFlowFactory:
         self._user_repo = user_repo
         self._project_repo = project_repo
         self._project_state_storage = project_state_storage
-        self._session_manager = session_manager
+        self._stop_publisher = stop_publisher
 
         self._status_callback_handler: StatusCallbackHandler | None = None
         self._stop_callback_handler: StopCallbackHandler | None = None
@@ -55,7 +53,6 @@ class ExecutionControlFlowFactory:
                 user_repo=self._user_repo,
                 project_repo=self._project_repo,
                 project_state_storage=self._project_state_storage,
-                session_manager=self._session_manager,
                 status_presenter=self._create_status_presenter(),
             )
         return self._status_callback_handler
@@ -68,7 +65,7 @@ class ExecutionControlFlowFactory:
                 phrase_repo=self._phrase_repo,
                 user_repo=self._user_repo,
                 project_state_storage=self._project_state_storage,
-                session_manager=self._session_manager,
+                stop_publisher=self._stop_publisher,
             )
         return self._stop_callback_handler
 

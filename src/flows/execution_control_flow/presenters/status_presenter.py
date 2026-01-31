@@ -2,9 +2,6 @@ from bot_framework.language_management.repos.protocols.i_phrase_repo import IPhr
 from bot_framework.protocols.i_message_service import IMessageService
 
 from src.bounded_context.project_management.entities.project import Project
-from src.bounded_context.task_execution.entities.execution_session import (
-    ExecutionSession,
-)
 
 
 class StatusPresenter:
@@ -23,16 +20,14 @@ class StatusPresenter:
         )
         self._message_service.send(chat_id=chat_id, text=text)
 
-    def send_session_status(
+    def send_selected_project(
         self,
         chat_id: int,
         language_code: str,
-        session: ExecutionSession,
         project: Project,
     ) -> None:
-        _ = session
         text = self._phrase_repo.get_phrase(
-            key="status.session_info",
+            key="status.selected_project",
             language_code=language_code,
         ).format(project_name=project.id)
         self._message_service.send(chat_id=chat_id, text=text)

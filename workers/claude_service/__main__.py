@@ -9,6 +9,7 @@ from src.bounded_context.agent_control.services.agent_session_manager import (
 )
 from src.messaging import MessagePublisher, RabbitMQConnection
 from workers.claude_service.request_consumer import ClaudeRequestConsumer
+from workers.claude_service.stop_consumer import StopRequestConsumer
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +37,13 @@ async def main() -> None:
         redis_url=redis_url,
     )
 
+    stop_consumer = StopRequestConsumer(
+        connection=connection,
+        session_manager=session_manager,
+    )
+
     await request_consumer.start()
+    await stop_consumer.start()
 
     logger.info("Claude Service started, waiting for requests...")
     await asyncio.Event().wait()
