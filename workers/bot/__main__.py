@@ -11,6 +11,7 @@ from src.flows.project_selection_flow import (
     ProjectSelectionFlowFactory,
     RedisProjectSelectionStateStorage,
 )
+from src.flows.welcome_flow import WelcomeMenuSender
 from workers.bot.repo_collection import RepoCollection
 
 logger = logging.getLogger(__name__)
@@ -101,6 +102,15 @@ def main() -> None:
         "menu.projects",
         project_selection_factory.get_project_list_callback_handler(),
     )
+
+    welcome_menu_sender = WelcomeMenuSender(
+        message_sender=app.message_sender,
+        phrase_repo=app.phrase_repo,
+        project_repo=repos.project_repo,
+        state_storage=project_state_storage,
+        buttons=app._main_menu_sender.buttons,
+    )
+    app._start_command_handler.main_menu_sender = welcome_menu_sender
 
     app.core.message_handler_registry.register(
         handler=ask_flow_factory.create_text_message_handler(),

@@ -1,7 +1,7 @@
 {
   "bot.start.welcome": {
-    "ru": "Добро пожаловать в Agent Fleet!",
-    "en": "Welcome to Agent Fleet!"
+    "ru": "Добро пожаловать в Agent Fleet!\n\nТекущий проект: {project_name}",
+    "en": "Welcome to Agent Fleet!\n\nCurrent project: {project_name}"
   },
   "menu.projects": {
     "ru": "📁 Проекты",
