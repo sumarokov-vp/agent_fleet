@@ -1,0 +1,65 @@
+from src.bounded_context.agent_control.services.agent_session_manager import (
+    AgentSessionManager,
+)
+from src.bounded_context.agent_control.services.project_lock_manager import (
+    ProjectLockManager,
+)
+from src.bounded_context.project_management.entities.project import Project
+from src.flows.ask_flow.presenters.execution_progress_presenter import (
+    ExecutionProgressPresenter,
+)
+
+
+class PromptExecutor:
+    def __init__(
+        self,
+        lock_manager: ProjectLockManager,
+        session_manager: AgentSessionManager,
+        progress_presenter: ExecutionProgressPresenter,
+    ) -> None:
+        self._lock_manager = lock_manager
+        self._session_manager = session_manager
+        self._progress_presenter = progress_presenter
+
+    async def execute(
+        self,
+        project: Project,
+        prompt: str,
+        user_id: int,
+        language_code: str,
+    ) -> bool:
+        if not self._lock_manager.acquire_lock(project.id):
+            return False
+
+        self._progress_presenter.send_started(
+            chat_id=user_id,
+            language_code=language_code,
+        )
+
+        session = self._session_manager.create_session(
+            project_id=project.id,
+            working_directory=project.path,
+        )
+
+        client = self._session_manager.get_client(session.id)
+        if not client:
+            self._lock_manager.release_lock(project.id)
+            return False
+
+        try:
+            await client.connect()
+            await client.query(prompt)
+            async for message in client.receive_messages():
+                self._progress_presenter.send_message(
+                    chat_id=user_id,
+                    message=message,
+                )
+        finally:
+            self._lock_manager.release_lock(project.id)
+            await self._session_manager.close_session(session.id)
+
+        self._progress_presenter.send_completed(
+            chat_id=user_id,
+            language_code=language_code,
+        )
+        return True

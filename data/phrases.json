@@ -102,5 +102,29 @@
   "button.back": {
     "ru": "Назад",
     "en": "Back"
+  },
+  "ask.execution_started": {
+    "ru": "Выполнение запущено...",
+    "en": "Execution started..."
+  },
+  "ask.execution_completed": {
+    "ru": "Выполнение завершено",
+    "en": "Execution completed"
+  },
+  "status.no_active_sessions": {
+    "ru": "Нет активных сессий",
+    "en": "No active sessions"
+  },
+  "status.session_info": {
+    "ru": "Проект: {project_name}\nСтатус: выполняется",
+    "en": "Project: {project_name}\nStatus: running"
+  },
+  "stop.session_interrupted": {
+    "ru": "Сессия прервана",
+    "en": "Session interrupted"
+  },
+  "stop.no_active_session": {
+    "ru": "Нет активной сессии для остановки",
+    "en": "No active session to stop"
   }
 }

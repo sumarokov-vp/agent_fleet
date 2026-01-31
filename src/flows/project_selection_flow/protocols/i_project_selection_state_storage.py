@@ -1,0 +1,9 @@
+from typing import Protocol
+
+
+class IProjectSelectionStateStorage(Protocol):
+    def save_selected_project(self, user_id: int, project_id: str) -> None: ...
+
+    def get_selected_project(self, user_id: int) -> str | None: ...
+
+    def clear_selection(self, user_id: int) -> None: ...
