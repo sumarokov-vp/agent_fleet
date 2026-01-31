@@ -9,6 +9,7 @@ from src.flows.ask_flow import AskFlowFactory, RedisPendingPromptStorage
 from src.flows.execution_control_flow import ExecutionControlFlowFactory
 from src.flows.project_selection_flow import ProjectSelectionFlowFactory
 from src.flows.welcome_flow import WelcomeMenuSender
+from src.messaging import MessagePublisher, RabbitMQConnection
 from src.shared import RedisMessageForReplaceStorage, RedisProjectSelectionStateStorage
 from workers.bot.repo_collection import RepoCollection
 
@@ -25,6 +26,7 @@ def main() -> None:
     bot_token = os.environ["BOT_TOKEN"]
     bot_database_url = os.environ["BOT_DB_URL"]
     redis_url = os.environ["REDIS_URL"]
+    rabbitmq_url = os.environ["RABBITMQ_URL"]
 
     environments_path = Path(__file__).parent.parent.parent / "environments.yaml"
     data_path = Path(__file__).parent.parent.parent / "data"
@@ -47,6 +49,9 @@ def main() -> None:
     project_state_storage = RedisProjectSelectionStateStorage(redis_url)
     message_for_replace_storage = RedisMessageForReplaceStorage(redis_url)
     pending_prompt_storage = RedisPendingPromptStorage(redis_url)
+
+    rabbitmq_connection = RabbitMQConnection(rabbitmq_url)
+    request_publisher = MessagePublisher(rabbitmq_connection, "claude.requests")
 
     project_selection_factory = ProjectSelectionFlowFactory(
         callback_answerer=app.callback_answerer,
@@ -83,7 +88,7 @@ def main() -> None:
         project_state_storage=project_state_storage,
         pending_prompt_storage=pending_prompt_storage,
         message_for_replace_storage=message_for_replace_storage,
-        session_manager=repos.session_manager,
+        request_publisher=request_publisher,
     )
     ask_flow_factory.register_handlers(
         callback_registry=app.callback_handler_registry,

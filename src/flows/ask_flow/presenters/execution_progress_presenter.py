@@ -2,12 +2,12 @@ from bot_framework.entities.bot_message import BotMessage
 from bot_framework.language_management.repos.protocols.i_phrase_repo import IPhraseRepo
 from bot_framework.protocols.i_message_service import IMessageService
 
-from claude_code_sdk import AssistantMessage, Message, TextBlock
-
 from src.shared.protocols import IMessageForReplaceStorage
 
 
 class ExecutionProgressPresenter:
+    MAX_TEXT_LENGTH = 4000
+
     def __init__(
         self,
         message_service: IMessageService,
@@ -26,24 +26,22 @@ class ExecutionProgressPresenter:
         bot_message = self._send_or_replace(chat_id, text)
         self._message_for_replace_storage.save(chat_id, bot_message)
 
-    def send_message(self, chat_id: int, message: Message) -> None:
-        if isinstance(message, AssistantMessage):
-            text_parts = []
-            for block in message.content:
-                if isinstance(block, TextBlock):
-                    text_parts.append(block.text)
-            if text_parts:
-                text = "\n".join(text_parts)
-                if len(text) > 4000:
-                    text = text[:4000] + "..."
-                bot_message = self._send_or_replace(chat_id, text)
-                self._message_for_replace_storage.save(chat_id, bot_message)
+    def send_text(self, chat_id: int, text: str) -> None:
+        if len(text) > self.MAX_TEXT_LENGTH:
+            text = text[: self.MAX_TEXT_LENGTH] + "..."
+        bot_message = self._send_or_replace(chat_id, text)
+        self._message_for_replace_storage.save(chat_id, bot_message)
 
     def send_completed(self, chat_id: int, language_code: str) -> None:
         text = self._phrase_repo.get_phrase(
             key="ask.execution_completed",
             language_code=language_code,
         )
+        bot_message = self._send_or_replace(chat_id, text)
+        self._message_for_replace_storage.save(chat_id, bot_message)
+
+    def send_error(self, chat_id: int, error: str) -> None:
+        text = f"Error: {error}"
         bot_message = self._send_or_replace(chat_id, text)
         self._message_for_replace_storage.save(chat_id, bot_message)
 

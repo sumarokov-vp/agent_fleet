@@ -41,8 +41,16 @@ class ConfirmationPresenter:
 
         text = f"{warning_text}\n\n<pre>{truncated_prompt}</pre>"
 
-        confirm_label = self._phrase_repo.get_phrase(
-            key="ask.confirm_button",
+        default_label = self._phrase_repo.get_phrase(
+            key="ask.mode_default",
+            language_code=language_code,
+        )
+        accept_edits_label = self._phrase_repo.get_phrase(
+            key="ask.mode_accept_edits",
+            language_code=language_code,
+        )
+        plan_label = self._phrase_repo.get_phrase(
+            key="ask.mode_plan",
             language_code=language_code,
         )
         cancel_label = self._phrase_repo.get_phrase(
@@ -53,9 +61,22 @@ class ConfirmationPresenter:
         keyboard = Keyboard(
             rows=[
                 [
-                    Button(text=confirm_label, callback_data=self._confirm_prefix),
+                    Button(
+                        text=default_label,
+                        callback_data=f"{self._confirm_prefix}:default",
+                    ),
+                    Button(
+                        text=accept_edits_label,
+                        callback_data=f"{self._confirm_prefix}:accept_edits",
+                    ),
+                    Button(
+                        text=plan_label,
+                        callback_data=f"{self._confirm_prefix}:plan",
+                    ),
+                ],
+                [
                     Button(text=cancel_label, callback_data=self._cancel_prefix),
-                ]
+                ],
             ]
         )
 

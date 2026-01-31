@@ -143,9 +143,17 @@
     "ru": "Вы собираетесь отправить промпт в проект: {project_name}",
     "en": "You are about to send a prompt to project: {project_name}"
   },
-  "ask.confirm_button": {
-    "ru": "✅ Подтвердить",
-    "en": "✅ Confirm"
+  "ask.mode_default": {
+    "ru": "▶️ Default",
+    "en": "▶️ Default"
+  },
+  "ask.mode_accept_edits": {
+    "ru": "✅ Accept Edits",
+    "en": "✅ Accept Edits"
+  },
+  "ask.mode_plan": {
+    "ru": "📋 Plan",
+    "en": "📋 Plan"
   },
   "ask.cancel_button": {
     "ru": "❌ Отменить",

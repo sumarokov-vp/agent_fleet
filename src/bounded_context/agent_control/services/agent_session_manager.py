@@ -1,5 +1,6 @@
 import uuid
 from datetime import UTC, datetime
+from typing import Literal
 
 from claude_code_sdk import ClaudeCodeOptions, ClaudeSDKClient
 
@@ -8,6 +9,8 @@ from src.bounded_context.task_execution.entities.execution_session import (
     SessionStatus,
 )
 
+PermissionModeType = Literal["default", "acceptEdits", "plan"]
+
 
 class AgentSessionManager:
     def __init__(self) -> None:
@@ -15,10 +18,20 @@ class AgentSessionManager:
         self._clients: dict[str, ClaudeSDKClient] = {}
 
     def create_session(
-        self, project_id: str, working_directory: str, task_id: str | None = None
+        self,
+        project_id: str,
+        working_directory: str,
+        task_id: str | None = None,
+        permission_mode: PermissionModeType = "default",
+        resume_session_id: str | None = None,
     ) -> ExecutionSession:
         session_id = str(uuid.uuid4())
-        options = ClaudeCodeOptions(cwd=working_directory)
+        sdk_permission_mode = self._map_permission_mode(permission_mode)
+        options = ClaudeCodeOptions(
+            cwd=working_directory,
+            permission_mode=sdk_permission_mode,
+            resume=resume_session_id,
+        )
         client = ClaudeSDKClient(options=options)
 
         session = ExecutionSession(
@@ -69,3 +82,6 @@ class AgentSessionManager:
             if session.project_id == project_id and session.status == SessionStatus.ACTIVE:
                 return session
         return None
+
+    def _map_permission_mode(self, mode: PermissionModeType) -> PermissionModeType:
+        return mode

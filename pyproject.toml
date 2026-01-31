@@ -12,6 +12,7 @@ dependencies = [
     "python-dotenv>=1.1.1",
     "redis>=6.4.0",
     "pyyaml>=6.0.0",
+    "aio-pika>=9.5.8",
 ]
 
 [dependency-groups]
@@ -96,7 +97,7 @@ layers = ["workers", "src"]
 [[tool.importlinter.contracts]]
 name = "src layers"
 type = "layers"
-layers = ["src.flows", "src.bounded_context", "src.base_protocols"]
+layers = ["src.flows", "src.bounded_context", "src.messaging", "src.base_protocols"]
 
 [tool.uv.sources]
 bot-framework = { path = "/Users/vladimirsumarokov/dev/smartist/bot_framework", editable = true }
