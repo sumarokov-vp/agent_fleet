@@ -178,6 +178,7 @@ projects:
 ## Связанные документы
 
 - [ESTIMATION.md](./ESTIMATION.md) — система оценки задач
+- [INTERNAL_ARCHITECTURE.md](./INTERNAL_ARCHITECTURE.md) — внутренняя архитектура Claude Service
 
 ## Статус
 
