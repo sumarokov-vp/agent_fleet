@@ -5,6 +5,7 @@ from bot_framework.protocols.i_message_service import IMessageService
 from bot_framework.role_management.repos.protocols.i_user_repo import IUserRepo
 
 from src.bounded_context.project_management.repos.project_repo import ProjectRepo
+from src.flows.ask_flow.repos.redis_job_session_storage import RedisJobSessionStorage
 from src.flows.ask_flow.services.prompt_executor import PromptExecutor
 from src.shared.protocols import IProjectSelectionStateStorage
 
@@ -18,6 +19,7 @@ class UserAnswerHandler:
         user_repo: IUserRepo,
         project_repo: ProjectRepo,
         project_state_storage: IProjectSelectionStateStorage,
+        job_session_storage: RedisJobSessionStorage,
         prompt_executor: PromptExecutor,
     ) -> None:
         self.callback_answerer = callback_answerer
@@ -26,6 +28,7 @@ class UserAnswerHandler:
         self._user_repo = user_repo
         self._project_repo = project_repo
         self._project_state_storage = project_state_storage
+        self._job_session_storage = job_session_storage
         self._prompt_executor = prompt_executor
         self.prefix = "answer"
         self.allowed_roles: set[str] | None = None
@@ -63,6 +66,8 @@ class UserAnswerHandler:
             self._message_service.send(chat_id=user.id, text=text)
             return
 
+        job_id = self._job_session_storage.get_job_id(session_id)
+
         self._prompt_executor.execute(
             project=project,
             prompt=answer,
@@ -70,5 +75,6 @@ class UserAnswerHandler:
             language_code=user.language_code,
             permission_mode="default",
             session_id=session_id,
+            job_id=job_id,
             answer_to_question={"answer": answer},
         )

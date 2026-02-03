@@ -7,6 +7,9 @@ from dotenv import load_dotenv
 from src.bounded_context.agent_control.services.agent_session_manager import (
     AgentSessionManager,
 )
+from src.bounded_context.claude_service.migrations.runner import apply_migrations
+from src.bounded_context.claude_service.repos.job_repo import JobRepo
+from src.bounded_context.claude_service.repos.session_repo import SessionRepo
 from src.messaging import MessagePublisher, RabbitMQConnection
 from workers.claude_service.request_consumer import ClaudeRequestConsumer
 from workers.claude_service.stop_consumer import StopRequestConsumer
@@ -23,6 +26,14 @@ async def main() -> None:
 
     redis_url = os.environ["REDIS_URL"]
     rabbitmq_url = os.environ["RABBITMQ_URL"]
+    claude_service_db_url = os.environ["CLAUDE_SERVICE_DB_URL"]
+
+    logger.info("Applying database migrations...")
+    apply_migrations(claude_service_db_url)
+    logger.info("Database migrations applied")
+
+    job_repo = JobRepo(claude_service_db_url)
+    session_repo = SessionRepo(claude_service_db_url)
 
     connection = RabbitMQConnection(rabbitmq_url)
     await connection.connect()
@@ -34,6 +45,8 @@ async def main() -> None:
         connection=connection,
         session_manager=session_manager,
         response_publisher=response_publisher,
+        job_repo=job_repo,
+        session_repo=session_repo,
         redis_url=redis_url,
     )
 

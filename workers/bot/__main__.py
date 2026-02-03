@@ -5,7 +5,9 @@ from pathlib import Path
 from bot_framework.app.bot_application import BotApplication
 from dotenv import load_dotenv
 
+from src.bounded_context.claude_service.repos.job_repo import JobRepo
 from src.flows.ask_flow import AskFlowFactory, RedisPendingPromptStorage
+from src.flows.ask_flow.repos import RedisJobSessionStorage
 from src.flows.execution_control_flow import ExecutionControlFlowFactory
 from src.flows.project_selection_flow import ProjectSelectionFlowFactory
 from src.flows.welcome_flow import WelcomeMenuSender
@@ -25,6 +27,7 @@ def main() -> None:
 
     bot_token = os.environ["BOT_TOKEN"]
     bot_database_url = os.environ["BOT_DB_URL"]
+    claude_service_db_url = os.environ["CLAUDE_SERVICE_DB_URL"]
     redis_url = os.environ["REDIS_URL"]
     rabbitmq_url = os.environ["RABBITMQ_URL"]
 
@@ -52,6 +55,9 @@ def main() -> None:
 
     request_publisher = SyncMessagePublisher(rabbitmq_url, "claude.requests")
     stop_publisher = SyncMessagePublisher(rabbitmq_url, "claude.requests")
+
+    job_repo = JobRepo(claude_service_db_url)
+    job_session_storage = RedisJobSessionStorage(redis_url)
 
     project_selection_factory = ProjectSelectionFlowFactory(
         callback_answerer=app.callback_answerer,
@@ -85,6 +91,8 @@ def main() -> None:
         phrase_repo=app.phrase_repo,
         user_repo=app.user_repo,
         project_repo=repos.project_repo,
+        job_repo=job_repo,
+        job_session_storage=job_session_storage,
         project_state_storage=project_state_storage,
         pending_prompt_storage=pending_prompt_storage,
         message_for_replace_storage=message_for_replace_storage,

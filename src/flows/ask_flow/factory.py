@@ -6,6 +6,7 @@ from bot_framework.protocols.i_callback_handler_registry import (
 from bot_framework.protocols.i_message_service import IMessageService
 from bot_framework.role_management.repos.protocols.i_user_repo import IUserRepo
 
+from src.bounded_context.claude_service.repos.job_repo import JobRepo
 from src.bounded_context.project_management.repos.project_repo import ProjectRepo
 from src.flows.ask_flow.handlers.execute_plan_handler import (
     CancelPlanHandler,
@@ -20,9 +21,14 @@ from src.flows.ask_flow.presenters.execution_progress_presenter import (
     ExecutionProgressPresenter,
 )
 from src.flows.ask_flow.protocols.i_pending_prompt_storage import IPendingPromptStorage
+from src.flows.ask_flow.repos.redis_job_session_storage import RedisJobSessionStorage
 from src.flows.ask_flow.services.prompt_executor import PromptExecutor
 from src.messaging import SyncMessagePublisher
-from src.shared.protocols import IMessageForReplaceStorage, IProjectSelectionStateStorage
+from src.shared.protocols import (
+    IMessageForReplaceStorage,
+    IProjectSelectionStateStorage,
+)
+
 
 
 class AskFlowFactory:
@@ -33,6 +39,8 @@ class AskFlowFactory:
         phrase_repo: IPhraseRepo,
         user_repo: IUserRepo,
         project_repo: ProjectRepo,
+        job_repo: JobRepo,
+        job_session_storage: RedisJobSessionStorage,
         project_state_storage: IProjectSelectionStateStorage,
         pending_prompt_storage: IPendingPromptStorage,
         message_for_replace_storage: IMessageForReplaceStorage,
@@ -43,6 +51,8 @@ class AskFlowFactory:
         self._phrase_repo = phrase_repo
         self._user_repo = user_repo
         self._project_repo = project_repo
+        self._job_repo = job_repo
+        self._job_session_storage = job_session_storage
         self._project_state_storage = project_state_storage
         self._pending_prompt_storage = pending_prompt_storage
         self._message_for_replace_storage = message_for_replace_storage
@@ -65,6 +75,7 @@ class AskFlowFactory:
         return PromptExecutor(
             request_publisher=self._request_publisher,
             progress_presenter=self._create_progress_presenter(),
+            job_repo=self._job_repo,
         )
 
     def _create_confirmation_presenter(self) -> ConfirmationPresenter:
@@ -120,6 +131,7 @@ class AskFlowFactory:
                 user_repo=self._user_repo,
                 project_repo=self._project_repo,
                 project_state_storage=self._project_state_storage,
+                job_session_storage=self._job_session_storage,
                 prompt_executor=self._create_prompt_executor(),
             )
         return self._user_answer_handler
@@ -133,6 +145,7 @@ class AskFlowFactory:
                 user_repo=self._user_repo,
                 project_repo=self._project_repo,
                 project_state_storage=self._project_state_storage,
+                job_session_storage=self._job_session_storage,
                 prompt_executor=self._create_prompt_executor(),
             )
         return self._execute_plan_handler

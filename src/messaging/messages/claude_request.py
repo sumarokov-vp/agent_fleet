@@ -1,5 +1,6 @@
 from datetime import UTC, datetime
 from typing import Literal
+from uuid import UUID
 
 from pydantic import BaseModel, Field
 
@@ -17,5 +18,6 @@ class ClaudeRequest(BaseModel):
     prompt: str
     permission_mode: PermissionMode = "default"
     session_id: str | None = None
+    job_id: UUID | None = None
     answer_to_question: dict[str, str] | None = None
     timestamp: datetime = Field(default_factory=lambda: datetime.now(tz=UTC))
